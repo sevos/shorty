@@ -1,0 +1,28 @@
+Shorty
+======
+
+A validator for too long data.
+
+
+Example
+=======
+
+class Article < ActiveRecord::Base
+  acts_as_shorty
+end
+
+You can also pass an optional :except parameter, an array containing the names of attributes to bypass the validation on.
+
+class Article < ActiveRecord::Base
+acts_as_shorty :except => [:url] # the Article.url will not be validated
+end
+
+You can also pass an optional :max parameter, determining the maximum length of the valid input, default length is 25
+
+class Article < ActiveRecord::Base
+  acts_as_shorty :except => [:url, :secret_hash], :max => 15
+end
+
+
+
+Copyright (c) 2009 [Astropanic], released under the MIT license

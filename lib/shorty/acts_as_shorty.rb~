@@ -1,0 +1,35 @@
+module Shorty 
+	def self.included(base)  
+		base.send :extend, ClassMethods 
+	end
+	
+	module ClassMethods 
+		def acts_as_shorty(options = {})
+		before_validation :validate_long_words
+
+			write_inheritable_attribute(:options, {
+				:except => (options[:except] || [])
+			      })
+      
+			class_inheritable_reader :options
+
+			include Shorty::InstanceMethods
+		end
+	end  
+
+	module InstanceMethods
+		def validate_long_words
+			self.class.columns.each do |column|
+			next unless (column.type == :string || column.type == :text)
+        
+			field = column.name.to_sym
+			value = self[field]
+			next if value.nil? || !value.is_a?(String)
+				puts "#{field} #{value}"
+				errors.add(field,"zawiera słowa dłuźsze niż 25 znaków") if value && value.split(' ').find {|x| x.length > 25}
+			end
+			return !(errors.size > 0)
+		end  
+	end 
+end 
+ActiveRecord::Base.send :include, Shorty
